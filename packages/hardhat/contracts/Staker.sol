@@ -14,10 +14,9 @@ contract Staker {
 
   bool internal openForWithdraw;
 
-  uint256 public deadline = block.timestamp + 72 hours;
   mapping (address => uint256) public balances;
 
-  uint256 public constant threshold = 1 ether;
+  uint256 internal _stakerCount;
 
   event Stake(address owner, uint256 amount);
 
@@ -26,29 +25,18 @@ contract Staker {
   // ( Make sure to add a `Stake(address,uint256)` event and emit it for the frontend <List/> display )
   function stake() public payable {
     require(!exampleExternalContract.completed(), "Already completed.");
-    require(timeLeft() > 0, "Deadline expired.");
+
+    if (balances[msg.sender] == 0) {
+      _stakerCount++;
+    }
 
     balances[msg.sender] += msg.value;
+
 
     emit Stake(msg.sender, msg.value);
   }
 
 
-  // After some `deadline` allow anyone to call an `execute()` function
-  // If the deadline has passed and the threshold is met, it should call `exampleExternalContract.complete{value: address(this).balance}()`
-
-  function execute() public {
-    require(!exampleExternalContract.completed(), "Already completed.");
-    require(block.timestamp >= deadline, "Deadline was'n met!");
-
-    if (address(this).balance >= threshold) {
-      exampleExternalContract.complete{value: address(this).balance}();
-    } else {
-      openForWithdraw = true;
-    }
-  }
-
-  // If the `threshold` was not met, allow everyone to call a `withdraw()` function to withdraw their balance
   function withdraw() public {
     require(openForWithdraw, "Not open for withdraw.");
     require(balances[msg.sender] > 0, "Not staked.");
@@ -60,15 +48,10 @@ contract Staker {
     balances[msg.sender] = 0;
   }
 
-
-  // Add a `timeLeft()` view function that returns the time left before the deadline for the frontend
-  function timeLeft() public view returns (uint256) {
-    if (block.timestamp >= deadline) {
-      return 0;
-    }
-
-    return deadline - block.timestamp;
+  function stakerCount() public view returns(uint256) {
+    return _stakerCount;
   }
+
 
   // Add the `receive()` special function that receives eth and calls stake()
   receive() external payable {
