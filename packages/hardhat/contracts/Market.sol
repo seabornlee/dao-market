@@ -15,7 +15,8 @@ contract Market {
   }
 
   function createEvent(string memory _name, string memory _description, string memory _homepage, uint256 _targetFund) public returns(uint256) {
-    events.push(new Event(_name, _description, _homepage, _targetFund));
+    Event e = new Event(_name, _description, _homepage, _targetFund);
+    events.push(e);
     uint id = events.length - 1;
     ownedEvents[msg.sender].push(id);
   }
