@@ -15159,7 +15159,7 @@ table tr th.ant-table-selection-column .ant-radio-wrapper {
 }
 .ant-menu-horizontal > .ant-menu-item a,
 .ant-menu-inline-collapsed-tooltip a {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(229, 230, 235, 1);
 }
 .ant-menu-horizontal > .ant-menu-item a::before {
   bottom: -2px;
@@ -19939,7 +19939,7 @@ span.ant-transfer-list-search-action {
   padding: 12px 8px;
 }
 .ant-table.ant-table-middle .ant-table-tbody .ant-table-wrapper:only-child .ant-table {
-  margin: -12px -8px -12px 25px;
+  margin: -12px -8px -12px 43px;
 }
 .ant-table.ant-table-small .ant-table-footer,
 .ant-table.ant-table-small .ant-table-tbody > tr > td,
