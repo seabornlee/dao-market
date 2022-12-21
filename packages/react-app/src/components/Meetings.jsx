@@ -1,7 +1,68 @@
 import { Table } from "antd";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { GlobalOutlined, CalendarOutlined } from "@ant-design/icons";
 import KolsGroup from "./KolsGroup";
+import { ethers } from "ethers";
+import {
+  useBalance,
+  useContractLoader,
+  useContractReader,
+  useGasPrice,
+  useOnBlock,
+  useUserProviderAndSigner,
+} from "eth-hooks";
+
+import { useContractConfig } from "../hooks";
+import { Transactor } from "../helpers";
+import { INFURA_ID, NETWORK, NETWORKS } from "../constants";
+const targetNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const localProviderUrl = targetNetwork.rpcUrl;
+// as you deploy to other networks you can set REACT_APP_PROVIDER=https://dai.poa.network in packages/react-app/.env
+const localProviderUrlFromEnv = process.env.REACT_APP_PROVIDER ? process.env.REACT_APP_PROVIDER : localProviderUrl;
+const localProvider = new ethers.providers.StaticJsonRpcProvider(localProviderUrlFromEnv);
+
+export default function Meetings() {
+  const poktMainnetProvider = navigator.onLine
+    ? new ethers.providers.StaticJsonRpcProvider(
+        "https://eth-mainnet.gateway.pokt.network/v1/lb/611156b4a585a20035148406",
+      )
+    : null;
+  const mainnetProvider =
+    poktMainnetProvider && poktMainnetProvider._isProvider
+      ? poktMainnetProvider
+      : scaffoldEthProvider && scaffoldEthProvider._network
+      ? scaffoldEthProvider
+      : mainnetInfura;
+
+  const [injectedProvider, setInjectedProvider] = useState();
+  const [address, setAddress] = useState();
+
+  const gasPrice = useGasPrice(targetNetwork, "fast");
+  const userProviderAndSigner = useUserProviderAndSigner(injectedProvider, localProvider);
+  const userSigner = userProviderAndSigner.signer;
+
+  useEffect(() => {
+    async function getAddress() {
+      if (userSigner) {
+        const newAddress = await userSigner.getAddress();
+        setAddress(newAddress);
+      }
+    }
+    getAddress();
+  }, [userSigner]);
+
+  const localChainId = localProvider && localProvider._network && localProvider._network.chainId;
+  const tx = Transactor(userSigner, gasPrice);
+  console.log(tx)
+
+  const contractConfig = useContractConfig();
+
+  // Load in your local 📝 contract and read a value from it:
+  const readContracts = useContractLoader(localProvider, contractConfig);
+
+  // If you want to make 🔐 write transactions to your contracts, use the userSigner:
+  const writeContracts = useContractLoader(userSigner, contractConfig, localChainId);
+
 const columns = [
   {
     title: "时间",
@@ -72,7 +133,9 @@ const columns = [
           </div>
           <div style={{ position: "relative", height: 130 }}>
             <div style={{ position: "absolute", bottom: 0, right: 0 }}>
-              <button className="button-customize">Mint NFT 门票</button>
+              <button className="button-customize" onClick={() => {
+                // tx(writeContracts.Market.donate({ value: ethers.utils.parseEther("0.5") }));
+              }}>Mint NFT 门票</button>
             </div>
           </div>
         </div>
@@ -141,56 +204,55 @@ const data = [
   },
 ];
 
-const detailscolumns = [
-  {
-    title: "开始时间",
-    dataIndex: "starttime",
-    key: "starttime",
-    render: starttime => {
-      return (
-        <div style={{ width: 270 }}>
-          <span>{starttime}</span>
-        </div>
-      );
-    },
-  },
-  {
-    title: "主题",
-    dataIndex: "topic",
-    key: "topic",
-    render: topic => {
-      return (
-        <div>
-          <p className="details-topic-title">{topic[0]}</p>
-          <p className="details-topic-overwrite">{topic[1]}</p>
-        </div>
-      );
-    },
-  },
-  {
-    title: "教练",
-    dataIndex: "kol",
-    key: "kol",
-    render: kol => {
-      return (
-        <div style={{ display: "flex" }}>
-          <div className="kol-name">
-            <KolsGroup props={1} />
-            <p>{kol[0]}</p>
+  const detailscolumns = [
+    {
+      title: "开始时间",
+      dataIndex: "starttime",
+      key: "starttime",
+      render: starttime => {
+        return (
+          <div style={{ width: 270 }}>
+            <span>{starttime}</span>
           </div>
-          <div className="kol-experience">{kol[1]}</div>
-        </div>
-      );
+        );
+      },
     },
-  },
-  { title: "投票地址", dataIndex: "wallet", key: "wallet",
-render: wallet => {
-  return (
-    <div>{wallet}</div>
-  )
-} },
-];
-export default function Meetings() {
+    {
+      title: "主题",
+      dataIndex: "topic",
+      key: "topic",
+      render: topic => {
+        return (
+          <div>
+            <p className="details-topic-title">{topic[0]}</p>
+            <p className="details-topic-overwrite">{topic[1]}</p>
+          </div>
+        );
+      },
+    },
+    {
+      title: "教练",
+      dataIndex: "kol",
+      key: "kol",
+      render: kol => {
+        return (
+          <div style={{ display: "flex" }}>
+            <div className="kol-name">
+              <KolsGroup props={1} />
+              <p>{kol[0]}</p>
+            </div>
+            <div className="kol-experience">{kol[1]}</div>
+          </div>
+        );
+      },
+    },
+    { title: "投票地址", dataIndex: "wallet", key: "wallet",
+  render: wallet => {
+    return (
+      <div>{wallet}</div>
+    )
+  } },
+  ];
   const expandedRowRender = data => {
     return (
       <div>

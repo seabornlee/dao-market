@@ -7,14 +7,18 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deployer } = await getNamedAccounts();
   const chainId = await getChainId();
 
-  const exampleExternalContract = await deployments.get(
-    "ExampleExternalContract"
+  const ticketContract = await deployments.get(
+    "Ticket"
   );
 
-  await deploy("Staker", {
+  const eventContract = await deployments.get(
+    "Event"
+  );
+
+  await deploy("Market", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: [exampleExternalContract.address],
+    args: [ticketContract.address, eventContract.address],
     log: true,
   });
 
@@ -62,4 +66,4 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   // }
 };
 
-module.exports.tags = ["Staker"];
+module.exports.tags = ["Market"];
