@@ -1,4 +1,4 @@
-import { Table } from "antd";
+import { Table, Modal, Image, Row, Col, Slider } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { GlobalOutlined, CalendarOutlined } from "@ant-design/icons";
 import KolsGroup from "./KolsGroup";
@@ -62,7 +62,20 @@ export default function Meetings() {
 
   // If you want to make 🔐 write transactions to your contracts, use the userSigner:
   const writeContracts = useContractLoader(userSigner, contractConfig, localChainId);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    tx(writeContracts.Market.donate({ _eventId: 1, amount: ethers.utils.parseEther("0.5") }));
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 const columns = [
   {
     title: "时间",
@@ -126,6 +139,12 @@ const columns = [
     dataIndex: "site",
     key: "site",
     render: site => {
+      const marks: SliderMarks = {
+        1: '$ 1',
+        5: '$ 5',
+        10: '$ 10',
+        15: '$ 15',
+      };
       return (
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div>
@@ -134,10 +153,38 @@ const columns = [
           <div style={{ position: "relative", height: 130 }}>
             <div style={{ position: "absolute", bottom: 0, right: 0 }}>
               <button className="button-customize" onClick={() => {
-                // tx(writeContracts.Market.donate({ value: ethers.utils.parseEther("0.5") }));
+                showModal();
               }}>Mint NFT 门票</button>
             </div>
           </div>
+          <Modal title="Mint NFT，加入社区，激励创作者" visible={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Row>
+              <Col span={12}>
+                <Image
+                  width={200}
+                  height={300}
+                  src="https://i.ibb.co/q1Ysq4H/1.png"
+                />
+                <b>ShangHai NFT</b>
+              </Col>
+              <Col span={12}>
+                <Image
+                  width={200}
+                  height={300}
+                  src="https://i.ibb.co/fSr67s8/Screen-Shot-2022-12-21-at-11-47-29.png"
+                />
+                <b>Ticket NFT</b>
+              </Col>
+            </Row>
+            <br/>
+            <div>
+              选择捐赠额后Mint，可获得两枚NFT徽章，进入IdeasBazaar的城市和演讲主题频道；<br/><br/>
+              您的捐赠额会在集会结束，退票期（72小时）过后，50%的金额转移给演讲者，10%给协议官方，40%返还给Ticket-NFT持有人。<br/><br/>
+              因此，如果您喜欢演讲，可将Ticket-NFT转赠给演讲者。或转给所在城市的活动组织者，鼓励更多本地自组织活动发生。<br/><br/>
+              Mint门票，积极投票或组织本地集会活动的用户将在后续获得IdeasBazaar的Token空投奖励。<br/>
+            </div>
+            <Slider marks={marks} min={1} max={15} defaultValue={10} />
+          </Modal>
         </div>
       );
     },
