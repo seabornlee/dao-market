@@ -2,25 +2,21 @@
 pragma solidity 0.8.4;  //Do not change the solidity version as it negativly impacts submission grading
 
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-contract Event {
+contract Event is ERC721 {
   using Counters for Counters.Counter;
 
   Counters.Counter private _idCounter;
 
-  string internal name;
-  string internal description;
-  string internal homepage;
-  uint256 internal targetFund;
+  constructor() ERC721("Event NFT", "ENFT") {
+  }
 
-  constructor(string memory _name, string memory _description, string memory _homepage, uint256 _targetFund) public {
+  function mint(address owner) public returns (uint256) {
     _idCounter.increment();
     uint256 id = _idCounter.current();
-
-    name = _name;
-    description = _description;
-    homepage = _homepage;
-    targetFund = _targetFund;
+    _mint(owner, id);
+    return id;
   }
 
 }

@@ -27,7 +27,7 @@ describe("Event", function () {
 
   it("Should deploy Event", async function () {
     const Event = await ethers.getContractFactory(contractArtifact);
-    contract = await Event.deploy("", "", "", 1);
+    contract = await Event.deploy();
     expect(contract).not.to.equal(null);
   });
 });

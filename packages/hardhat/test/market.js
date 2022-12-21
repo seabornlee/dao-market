@@ -27,24 +27,48 @@ describe("Market", function () {
     contractArtifact = "contracts/Market.sol:Market";
   }
 
-  it("Should deploy Market", async function () {
-    const Market = await ethers.getContractFactory(contractArtifact);
-    contract = await Market.deploy();
-  });
+  async function createEvent() {
+    const result = await contract.createEvent();
 
-  it("Should create an event", async function () {
-    const [ owner ] = await ethers.getSigners();
-
-    let events = await contract.eventsOf(owner.address);
-    expect(events.length).to.equal(0);
-
-    const result = await contract.createEvent("DevCon Bogota", "Devcon is an intensive introduction for new Ethereum explorers, a global family reunion for those already a part of our ecosystem, and a source of energy and creativity for all.", "https://devcon.org/", ethers.utils.parseEther("10"))
 
     console.log('\t'," ⏳  Waiting for confirmation...")
     const txResult = await result.wait()
     expect(txResult.status).to.equal(1, "Error while awaiting mint confirmation");
+    return txResult.events[1].args[0];
+  }
 
-    events = await contract.eventsOf(owner.address);
-    expect(events.length).to.equal(1);
+  it("Should deploy Market", async function () {
+    const TicketContract = await ethers.getContractFactory("Ticket");
+    const ticketContract = await TicketContract.deploy();
+
+    const EventContract = await ethers.getContractFactory("Event");
+    const eventContract = await EventContract.deploy();
+
+    const Market = await ethers.getContractFactory(contractArtifact);
+    contract = await Market.deploy(ticketContract.address, eventContract.address);
+  });
+
+  it("Should create an event", async function () {
+    const [ owner ] = await ethers.getSigners();
+    let id = await createEvent();
+    expect(id).to.equal(1);
+  });
+
+  it("Should get 2 NFTs when donate", async function() {
+    const [ owner ] = await ethers.getSigners();
+
+    const eventId = await createEvent();
+    await expect(contract.donate(eventId, 15))
+      .to.emit(contract, "TicketMinted");
+  });
+
+  it('Donate', () => {
+    it('Should increase balance', () => {
+
+    });
+    it('Should find event by id', () => {
+
+    });
+
   });
 });

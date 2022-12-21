@@ -34,8 +34,8 @@ describe("Ticket", function () {
     });
 
     describe("Speaker", function () {
-      async function mint() {
-        const result = await ticketContract.mint()
+      async function mint(owner) {
+        const result = await ticketContract.mintForCity(owner, 1)
 
         console.log('\t'," ⏳  Waiting for confirmation...")
         const txResult =  await result.wait()
@@ -47,10 +47,10 @@ describe("Ticket", function () {
       it("Should mint NFT with id increased automatically", async function () {
         const [ owner ] = await ethers.getSigners();
 
-        let id = await mint();
+        let id = await mint(owner.address);
         expect(id).to.equal(1);
 
-        id = await mint();
+        id = await mint(owner.address);
         expect(id).to.equal(2);
       });
     });

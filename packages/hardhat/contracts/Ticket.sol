@@ -10,13 +10,21 @@ contract Ticket is ERC721 {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
 
+
   constructor() ERC721("Ticket NFT", "TNFT") {
   }
 
-  function mint() public returns(uint256) {
+  function mintForCity(address owner, string memory city) public returns(uint256) {
     _tokenIdCounter.increment();
     uint256 tokenId = _tokenIdCounter.current();
-    _safeMint(msg.sender, tokenId);
+    _safeMint(owner, tokenId);
+    return tokenId;
+  }
+
+  function mintForEvent(address owner, uint256 eventId) public returns(uint256) {
+    _tokenIdCounter.increment();
+    uint256 tokenId = _tokenIdCounter.current();
+    _safeMint(owner, tokenId);
     return tokenId;
   }
 }
