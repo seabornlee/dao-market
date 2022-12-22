@@ -69,7 +69,7 @@ export default function Meetings() {
   };
 
   const handleOk = () => {
-    tx(writeContracts.Market.donate({ _eventId: 1, amount: ethers.utils.parseEther("0.5") }));
+    tx(writeContracts.Market.donate(1, ethers.utils.parseEther("0.5")));
     setIsModalOpen(false);
   };
 
@@ -206,8 +206,7 @@ export default function Meetings() {
             "《AIGC爆火带来的风险与机遇》",
             "AIGC全称为AI-Generated Content，即利用人工智能技术来生产内容，在创意、表现力、创作速度、迭代、 传播等方面都具有显著的技术优势，已经成为继PGC（专业生产内容）和UGC（用户生产内容）之后新型的内容创作方式。最近AIGC爆火，叠加Web3及元宇宙概念，在市场上刮起一阵大风，我们邀请到许多Web3的开发者们从各自项目的角度来谈一谈AIGC为大家的项目带来的风险和机遇。",
           ],
-          kol: ["John", "Google，Facebook前员工。嘻嘻嘻休息休息数字游民，AIGC爱好者。著有AI与奇点等文章点对点"],
-          wallet: "0xA75c6a6Af1757F543546BE1D472D0ACb1981d0Df",
+          kol: ["John", "Google，Facebook前员工。嘻嘻嘻休息休息数字游民，AIGC爱好者。著有AI与奇点等文章点对点", "0xA75c6a6Af1757F543546BE1D472D0ACb1981d0Df"]
         },
         {
           starttime: "上午10:10",
@@ -216,8 +215,7 @@ export default function Meetings() {
             "《Maverick Protocol: Bring Real Yield to DeFi》",
             "Maverick Protocol offers a new infrastructure for decentralized finance, built to facilitate the most liquid markets for traders, liquidity providers, DAO treasuries, and developers, powered by a revolutionary Automated Market Maker (AMM).",
           ],
-          kol: ["John", "Google，Facebook前员工。嘻嘻嘻休息休息数字游民，AIGC爱好者。著有AI与奇点等文章点对点"],
-          wallet: "0xA75c6a6Af1757F543546BE1D472D0ACb1981d0Df",
+          kol: ["John", "Google，Facebook前员工。嘻嘻嘻休息休息数字游民，AIGC爱好者。著有AI与奇点等文章点对点", "0xA75c6a6Af1757F543546BE1D472D0ACb1981d0Df"]
         },
       ],
     },
@@ -236,8 +234,7 @@ export default function Meetings() {
             "《Maverick Protocol: Bring Real Yield to DeFi》",
             "Maverick Protocol offers a new infrastructure for decentralized finance, built to facilitate the most liquid markets for traders, liquidity providers, DAO treasuries, and developers, powered by a revolutionary Automated Market Maker (AMM).",
           ],
-          kol: ["John", "Google，Facebook前员工。嘻嘻嘻休息休息数字游民，AIGC爱好者。著有AI与奇点等文章点对点"],
-          wallet: "0xA75c6a6Af1757F543546BE1D472D0ACb1981d0Df",
+          kol: ["John", "Google，Facebook前员工。嘻嘻嘻休息休息数字游民，AIGC爱好者。著有AI与奇点等文章点对点", "0xA75c6a6Af1757F543546BE1D472D0ACb1981d0Df"]
         },
         {
           starttime: "上午10:10",
@@ -245,8 +242,7 @@ export default function Meetings() {
             "《Maverick Protocol: Bring Real Yield to DeFi》",
             "Maverick Protocol offers a new infrastructure for decentralized finance, built to facilitate the most liquid markets for traders, liquidity providers, DAO treasuries, and developers, powered by a revolutionary Automated Market Maker (AMM).",
           ],
-          kol: ["John", "Google，Facebook前员工。嘻嘻嘻休息休息数字游民，AIGC爱好者。著有AI与奇点等文章点对点"],
-          wallet: "0xA75c6a6Af1757F543546BE1D472D0ACb1981d0Df",
+          kol: ["John", "Google，Facebook前员工。嘻嘻嘻休息休息数字游民，AIGC爱好者。著有AI与奇点等文章点对点", "0xA75c6a6Af1757F543546BE1D472D0ACb1981d0Df"]
         },
       ],
     },
@@ -289,17 +285,14 @@ export default function Meetings() {
               <KolsGroup props={1} />
               <p>{kol[0]}</p>
             </div>
-            <div className="kol-experience">{kol[1]}</div>
+            <div>
+              <div>{kol[2]}</div>
+              <div className="kol-experience">{kol[1]}</div>
+            </div>
           </div>
         );
       },
     },
-    { title: "投票地址", dataIndex: "wallet", key: "wallet",
-  render: wallet => {
-    return (
-      <div>{wallet}</div>
-    )
-  } },
   ];
   const expandedRowRender = data => {
     return (
@@ -309,6 +302,7 @@ export default function Meetings() {
           dataSource={data.details}
           size="middle"
           pagination={false}
+          showHeader={false}
           className="details-table"
         ></Table>
       </div>
