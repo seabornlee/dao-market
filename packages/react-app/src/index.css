@@ -120,3 +120,19 @@ code {
   padding-top: 10px;
   font-size: 13px;
 }
+
+.private-channel {
+  border: 1px solid #88888888;
+  padding: 5px 8px;
+  text-align: center;
+}
+
+.pc-wrapper {
+  text-align: center;
+}
+
+.pc-tips {
+  border: 1px solid #88888888;
+  border-radius: 5px;
+  padding: 5px 8px;
+}

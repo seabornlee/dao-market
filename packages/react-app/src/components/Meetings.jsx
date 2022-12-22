@@ -1,4 +1,4 @@
-import { Table, Modal, Image, Row, Col, Slider } from "antd";
+import { Table, Modal, Avatar, Image, Row, Col, Slider } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import { GlobalOutlined, CalendarOutlined } from "@ant-design/icons";
 import KolsGroup from "./KolsGroup";
@@ -63,6 +63,7 @@ export default function Meetings() {
   // If you want to make 🔐 write transactions to your contracts, use the userSigner:
   const writeContracts = useContractLoader(userSigner, contractConfig, localChainId);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPrivateChannelModalOpen, setIsPrivateChannelModalOpen] = useState(false);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -75,6 +76,18 @@ export default function Meetings() {
 
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const showPrivateChannelModal = () => {
+    setIsPrivateChannelModalOpen(true);
+  };
+
+  const handlePrivateChannelOk = () => {
+    setIsPrivateChannelModalOpen(false);
+  };
+
+  const handlePrivateChannelCancel = () => {
+    setIsPrivateChannelModalOpen(false);
   };
 
   const columns = [
@@ -255,11 +268,12 @@ export default function Meetings() {
       key: "starttime",
       render: starttime => {
         return (
-          <div style={{ width: 270 }}>
+          <div style={{ width: 170 }}>
             <span>{starttime}</span>
           </div>
         );
       },
+      fixed: "left"
     },
     {
       title: "主题",
@@ -293,6 +307,35 @@ export default function Meetings() {
         );
       },
     },
+    {
+      title: "私人频道",
+      dataIndex: "privateChannel",
+      key: "privateChannel",
+      render: barCodeUrl => {
+        return (
+          <div className="private-channel" onClick={
+            () => {
+              setIsPrivateChannelModalOpen(true);
+            }
+            }>
+            <Row align="middle">
+              <Col span={12}>
+                加入Speaker私人频道
+              </Col>
+              <Col span={12}>
+                <Image
+                  width={50}
+                  height={50}
+                  preview={false}
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQk-zUE6CGueaRa9uk2vUaPvGGsVlRHw7Z32MCu2AmRwAjR8mrP7fygKlyfcHEUsMBPvfM&usqp=CAU"
+                />
+              </Col>
+            </Row>
+          </div>
+        )
+      },
+      width: 200
+    }
   ];
   const expandedRowRender = data => {
     return (
@@ -300,7 +343,7 @@ export default function Meetings() {
         <Table
           columns={detailscolumns}
           dataSource={data.details}
-          size="middle"
+          size="small"
           pagination={false}
           showHeader={false}
           className="details-table"
@@ -319,6 +362,27 @@ export default function Meetings() {
         pagination={true}
         size="middle"
       />
+      <Modal title="加入Speaker私人频道" visible={isPrivateChannelModalOpen} onOk={handlePrivateChannelOk} onCancel={handlePrivateChannelCancel}>
+        <div className="pc-wrapper">
+          <div className="pc-tips">如果你喜欢Lily的演讲，可以将自己的Ticket-NFT发送给Ta下方的地址，将会获得一枚SpeakerFans-NFT，然后可以进入Ta在IdeasBazzar Discord中的私人频道进行发言交流。</div>
+          <div>
+            <Avatar size={82} src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+          </div>
+          <div>
+            <Image
+              width={200}
+              height={200}
+              src="data:image/png;base64,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"
+            />
+          </div>
+          <div>
+            0xA75c6a6Af1757F543546BE1D472D0ACb1981d0Df
+          </div>
+          <div>
+            Arbitrium
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
