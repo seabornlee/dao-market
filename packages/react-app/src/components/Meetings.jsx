@@ -353,7 +353,6 @@ export default function Meetings() {
           </div>
         );
       },
-      width: 200,
     },
   ];
   const expandedRowRender = data => {
